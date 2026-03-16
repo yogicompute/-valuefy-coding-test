@@ -90,6 +90,8 @@ export default function Page() {
 
             <input
               type="number"
+              min={0}
+              max={100}
               value={fund.allocation_pct}
               className="w-24 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded text-center"
               onChange={(e) =>
