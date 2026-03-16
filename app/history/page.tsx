@@ -15,21 +15,21 @@ export default async function Page(){
       </h1>
 
       {data.length === 0 && (
-        <div className="p-6 border border-neutral-800 rounded-lg bg-neutral-900 text-neutral-400">
-          No rebalance recommendations saved yet.
-        </div>
+        <p className="text-neutral-400">
+          No recommendations saved yet.
+        </p>
       )}
 
       <div className="space-y-4">
 
-        {data.map((h:any,i:number)=>(
+        {data.map((h:any)=>(
           <div
-            key={i}
-            className="p-4 border border-neutral-800 rounded-lg bg-neutral-900 flex justify-between"
+            key={h.created_at}
+            className="p-4 bg-neutral-900 border border-neutral-800 rounded flex justify-between"
           >
             <span>{h.created_at}</span>
             <span>₹{h.portfolio_value}</span>
-            <span className="text-neutral-400">{h.status}</span>
+            <span>{h.status}</span>
           </div>
         ))}
 

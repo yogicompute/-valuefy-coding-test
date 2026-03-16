@@ -1,30 +1,39 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [data, setData] = useState<any>(null);
 
-  const [data,setData] = useState<any>(null)
-
-  useEffect(()=>{
+  useEffect(() => {
     fetch("/api/comparison")
-      .then(r=>r.json())
-      .then(setData)
-  },[])
+      .then((r) => r.json())
+      .then(setData);
+  }, []);
 
-  if(!data) return <p>Loading...</p>
+  const saveRecommendation = async () => {
+    await fetch("/api/save-rebalance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        portfolio: data.total,
+        totalBuy: data.totalBuy,
+        totalSell: data.totalSell,
+        netCash: data.netCash,
+      }),
+    });
+
+    alert("Rebalance saved!");
+  };
+
+  if (!data) return <p>Loading...</p>;
 
   return (
     <div className="space-y-8">
-
-      <h1 className="text-3xl font-semibold">
-        Portfolio Comparison
-      </h1>
+      <h1 className="text-3xl font-semibold">Portfolio Comparison</h1>
 
       <div className="rounded-lg border border-neutral-800 overflow-hidden">
-
         <table className="w-full text-sm">
-
           <thead className="bg-neutral-900 text-neutral-400">
             <tr>
               <th className="p-4 text-left">Fund</th>
@@ -37,17 +46,15 @@ export default function Page() {
           </thead>
 
           <tbody>
-
-            {data.rows.map((r:any,i:number)=>{
-
+            {data.rows.map((r: any, i: number) => {
               const color =
                 r.action === "BUY"
-                ? "text-green-400"
-                : r.action === "SELL"
-                ? "text-red-400"
-                : "text-yellow-400"
+                  ? "text-green-400"
+                  : r.action === "SELL"
+                    ? "text-red-400"
+                    : "text-yellow-400";
 
-              return(
+              return (
                 <tr
                   key={i}
                   className="border-t border-neutral-800 hover:bg-neutral-900"
@@ -56,12 +63,8 @@ export default function Page() {
                   <td className="p-4 text-center">
                     {r.currentPct.toFixed(1)}%
                   </td>
-                  <td className="p-4 text-center">
-                    {r.targetPct ?? "-"}
-                  </td>
-                  <td className="p-4 text-center">
-                    {r.drift.toFixed(1)}%
-                  </td>
+                  <td className="p-4 text-center">{r.targetPct ?? "-"}</td>
+                  <td className="p-4 text-center">{r.drift.toFixed(1)}%</td>
                   <td className={`p-4 text-center font-medium ${color}`}>
                     {r.action}
                   </td>
@@ -69,16 +72,13 @@ export default function Page() {
                     ₹{r.amount.toLocaleString()}
                   </td>
                 </tr>
-              )
+              );
             })}
-
           </tbody>
-
         </table>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
-
         <div className="p-6 rounded-lg border border-neutral-800 bg-neutral-900">
           <p className="text-sm text-neutral-400">Total Buy</p>
           <p className="text-xl font-semibold text-green-400">
@@ -95,13 +95,15 @@ export default function Page() {
 
         <div className="p-6 rounded-lg border border-neutral-800 bg-neutral-900">
           <p className="text-sm text-neutral-400">Fresh Money Needed</p>
-          <p className="text-xl font-semibold">
-            ₹{data.netCash}
-          </p>
+          <p className="text-xl font-semibold">₹{data.netCash}</p>
         </div>
-
       </div>
-
+      <button
+        onClick={saveRecommendation}
+        className="px-5 py-2 bg-green-600 rounded"
+      >
+        Save Rebalancing
+      </button>
     </div>
-  )
+  );
 }
